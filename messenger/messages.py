@@ -8,6 +8,7 @@
 ########################################################################
 
 import control, message
+from control import BellLaPadulaControl
 
 ##################################################
 # MESSAGES
@@ -22,22 +23,24 @@ class Messages:
     def __init__(self, filename):
         self._messages = []
         self._read_messages(filename)
+        self._control = BellLaPadulaControl()
 
     ##################################################
     # MESSAGES :: DISPLAY
     # Display the list of messages
     ################################################## 
-    def display(self):
+    def display(self, user_level):
         for m in self._messages:
-            m.display_properties()
+            if self._control.can_read(user_level, m.get_confidentiality()):
+                m.display_properties()
 
     ##################################################
     # MESSAGES :: SHOW
     # Show a single message
     ################################################## 
-    def show(self, id):
+    def show(self, id, user_level):
         for m in self._messages:
-            if m.get_id() == id:
+            if m.get_id() == id and self._control.can_read(user_level, m.get_confidentiality()):
                 m.display_text()
                 return True
         return False
@@ -46,26 +49,26 @@ class Messages:
     # MESSAGES :: UPDATE
     # Update a single message
     ################################################## 
-    def update(self, id, text):
+    def update(self, id, text, user_level):
         for m in self._messages:
-            if m.get_id() == id:
+            if m.get_id() == id and self._control.can_write(user_level, m.get_confidentiality()):
                 m.update_text(text)
 
     ##################################################
     # MESSAGES :: REMOVE
     # Remove a single message
     ################################################## 
-    def remove(self, id):
+    def remove(self, id, user_level):
         for m in self._messages:
-            if m.get_id() == id:
+            if m.get_id() == id and self._control.can_write(user_level, m.get_confidentiality()):
                 m.clear()
 
     ##################################################
     # MESSAGES :: ADD
     # Add a new message
     ################################################## 
-    def add(self, text, author, date):
-        m = message.Message(text, author, date)
+    def add(self, text, author, date, confidentiality):
+        m = message.Message(text, author, date, confidentiality)
         self._messages.append(m)
 
     ##################################################
@@ -77,7 +80,7 @@ class Messages:
             with open(filename, "r") as f:
                 for line in f:
                     text_control, author, date, text = line.split('|')
-                    self.add(text.rstrip('\r\n'), author, date)
+                    self.add(text.rstrip('\r\n'), author, date, text_control)
 
         except FileNotFoundError:
             print(f"ERROR! Unable to open file \"{filename}\"")
