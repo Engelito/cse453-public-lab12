@@ -53,6 +53,8 @@ class Messages:
         for m in self._messages:
             if m.get_id() == id and self._control.can_write(user_level, m.get_confidentiality()):
                 m.update_text(text)
+            elif m.get_id() == id and not self._control.can_write(user_level, m.get_confidentiality()):
+                print("Clearance too high, cannot update message.")
 
     ##################################################
     # MESSAGES :: REMOVE
