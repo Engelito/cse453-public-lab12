@@ -74,6 +74,17 @@ class Messages:
         self._messages.append(m)
 
     ##################################################
+    # MESSAGES :: ADD NEW MESSAGE
+    # Adds a new message based on the user_level and the confidentiality
+    ##################################################
+    def add_new_message(self, text, author, date, confidentiality, user_level):
+        if self._control.can_write(user_level, confidentiality):
+            m = message.Message(text, author, date, confidentiality)
+            self._messages.append(m)
+        else:
+            print("Cannot write to confidentialtiy level:", confidentiality, "\nYour security clearance is too high.")
+
+    ##################################################
     # MESSAGES :: READ MESSAGES
     # Read messages from a file
     ################################################## 

@@ -85,10 +85,11 @@ class Interact:
     # Add a single message
     ################################################## 
     def add(self):
-        self._p_messages.add(self._prompt_for_line("message"),
+        self._p_messages.add_new_message(self._prompt_for_line("message"),
                              self._username,
                              self._prompt_for_line("date"),
-                             self._prompt_for_line("confidentiality"))
+                             self._prompt_for_line("confidentiality"),
+                             self._user_level)
 
     ##################################################
     # INTERACT :: UPDATE
